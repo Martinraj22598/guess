@@ -1,154 +1,113 @@
 <!DOCTYPE html>
-<html lang="en-US">
+<html>
+  <head>
+    <meta charset="utf-8">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Guessing game</title>
-</head>
+    <title>Number guessing game</title>
 
-<body>
+    <style>
+      html {
+        font-family: sans-serif;
+      }
 
-  <script>
-      const readline = require('readline'); //reading input and output
+      body {
+        width: 50%;
+        max-width: 800px;
+        min-width: 480px;
+        margin: 0 auto;
+      }
 
-const rl = readline.createInterface({
-    input: process.stdin, //input
-    output: process.stdout //output
-});
+      .lastResult {
+        color: white;
+        padding: 3px;
+      }
+    </style>
+  </head>
 
-//insitialization
-var l = 1
-var r = 100
-var m = Math.floor(Math.random() * 100) + 1; // generate random number
-var count = 0;
+  <body>
+    <h1>Number guessing game</h1>
 
-// main function
-function findGame() {
-    rl.question("Do you want play normal (n) or reverse (r) ", game => {
-        //normal game
-        if (game == "n") {  
-            console.log("\nplease think between 1 to 100\n");
+    <p>We have selected a random number between 1 and 100. See if you can guess it in 10 turns or fewer. We'll tell you if your guess was too high or too low.</p>
 
-            setTimeout(function () { // time delay
-                console.log("I will try to guess it.\n");
-            }, 3000);
+    <div class="form">
+      <label for="guessField">Enter a guess: </label><input type="text" id="guessField" class="guessField">
+      <input type="submit" value="Submit guess" class="guessSubmit">
+    </div>
 
-            //it is read function, it asks input from user
-            setTimeout(function Read() {
-                count++
-                if (count > 7) // after 7 times , this part will run 
-                {
-                    console.log("Sorry, i can't find your guess")
-                    return rl.close()
-                }
-                rl.question(`is it ... ${m} ? please enter yes or no `, answer => {
-                    //if give yes, this part will be working
-                    if (answer == "yes") {
-                        console.log(`Your number was ${m}!`) //it is print the answer
-                        console.log(`I guessed the number in ${count} guesses`)
-                        rl.question("Do you want to play it again ? (yes or no) ", choose => {//  play again the game 
-                            if (choose == "yes") {
-                                l = 0;
-                                r = 100;
-                                m = Math.floor(Math.random() * 100) + 1;
-                                count = 0;
-                                console.log("\nWelcome\n")
-                                findGame()
-                            }
-                            else {
-                                console.log("Thank you for Playing !!!!!")
-                                return rl.close();
-                            }
-                        })
-                    }
-                   //if give no, this part wil be working
-                    else if (answer == "no") {
-                        function repeat() {
-                            rl.question("Is it higher (h), or lower (l) ? ", key => {
-                                // if the answer is high, this part will be working
-                                if (key == "h") {
-                                    m = m + 1;
-                                    l = m;
-                                    m = Math.floor((l + r) / 2);
-                                    if (l > r) {
-                                        console.log("you are cheater")
-                                        return rl.close()
-                                    }
-                                    Read();
+    <div class="resultParas">
+      <p class="guesses"></p>
+      <p class="lastResult"></p>
+      <p class="lowOrHi"></p>
+    </div>
 
-                                }
-                                // if the answer is low, this part will we working
-                                else if (key == "l") {
-                                    m = m - 1;
-                                    r = m;
-                                    m = Math.floor((l + r) / 2);
-                                    //if you try to cheat the computer, it will find you
-                                    if (l > r) {
-                                        console.log("you are cheater")
-                                        return rl.close()
-                                    }
+    <script>
+      let randomNumber = Math.floor(Math.random() * 100) + 1;
+      const guesses = document.querySelector('.guesses');
+      const lastResult = document.querySelector('.lastResult');
+      const lowOrHi = document.querySelector('.lowOrHi');
+      const guessSubmit = document.querySelector('.guessSubmit');
+      const guessField = document.querySelector('.guessField');
+      let guessCount = 1;
+      let resetButton;
 
-                                    Read();
-
-                                }
-                                // perhaps,if you click another key instead of h or l, this part will be working 
-                                else {
-                                    console.log("please enter h or l ")
-                                    repeat()
-                                }
-                            })
-
-                        } repeat()
-
-                    }
-
-                })
-            }, 5000);// time delay
-
-
+      function checkGuess() {
+        let userGuess = Number(guessField.value);
+        if (guessCount === 1) {
+          guesses.textContent = 'Previous guesses: ';
         }
-        //reverse game
-        else if (game == "r") {
-            console.log("\nI will think between 1 to 100\n");
 
-            setTimeout(function () {
-                console.log("You will try to guess it.\n");
-            }, 3000); // time delay
-        
+        guesses.textContent += userGuess + ' ';
 
-            setTimeout(function reverse() { // main reverse function
-                count++
-                rl.question("Enter between 1 to 100 ", number => {
-                    if (number > m) {// m-random number, number - user input
-                        console.log("\nplease enter less value\n")
-                        reverse()
-                    }
-                    else if (number < m) {// m-random number, number - user input
-                        console.log("\nplease enter high value\n")
-                        reverse()
-                    }
-                    else {
-                        console.log("\nyou find it !!!!!\n", `You guessed the number in ${count} guesses\n`)
-                        rl.question("Do you want to play it again ? (yes or no) ", choose => {// play again
-                            if (choose == "yes") {
-                                m = Math.floor(Math.random() * 100) + 1;
-                                count = 0;
-                                console.log("\nWelcome !!!!!\n")
-                                findGame()
-                            }
-                            else {
-                                console.log("Thank you for Playing !!!!!")
-                                return rl.close();
-                            }
-                        })
-
-                    }
-                })
-            }, 5000);// time delay
+        if (userGuess === randomNumber) {
+          lastResult.textContent = 'Congratulations! You got it right!';
+          lastResult.style.backgroundColor = 'green';
+          lowOrHi.textContent = '';
+          setGameOver();
+        } else if (guessCount === 10) {
+          lastResult.textContent = '!!!GAME OVER!!!';
+          lowOrHi.textContent = '';
+          setGameOver();
+        } else {
+          lastResult.textContent = 'Wrong!';
+          lastResult.style.backgroundColor = 'red';
+          if(userGuess < randomNumber) {
+            lowOrHi.textContent = 'Last guess was too low!' ;
+          } else if(userGuess > randomNumber) {
+            lowOrHi.textContent = 'Last guess was too high!';
+          }
         }
-    })
-} findGame()// call function
-</script>
-</body>
+
+        guessCount++;
+        guessField.value = '';
+        guessField.focus();
+      }
+
+      guessSubmit.addEventListener('click', checkGuess);
+
+      function setGameOver() {
+        guessField.disabled = true;
+        guessSubmit.disabled = true;
+        resetButton = document.createElement('button');
+        resetButton.textContent = 'Start new game';
+        document.body.appendChild(resetButton);
+        resetButton.addEventListener('click', resetGame);
+      }
+
+      function resetGame() {
+        guessCount = 1;
+        const resetParas = document.querySelectorAll('.resultParas p');
+        for(let i = 0 ; i < resetParas.length ; i++) {
+          resetParas[i].textContent = '';
+        }
+
+        resetButton.parentNode.removeChild(resetButton);
+        guessField.disabled = false;
+        guessSubmit.disabled = false;
+        guessField.value = '';
+        guessField.focus();
+        lastResult.style.backgroundColor = 'white';
+        randomNumber = Math.floor(Math.random() * 100) + 1;
+      }
+    </script>
+  </body>
 </html>
